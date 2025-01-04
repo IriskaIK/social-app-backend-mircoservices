@@ -1,0 +1,4 @@
+interface UserDTO{
+    id : string;
+
+}
