@@ -2,8 +2,8 @@ import {ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {User} from "src/entities/user.entity";
-import {comparePasswords, hashPassword} from "src/auth/utils/hash.util";
-import {UserCredentials} from "src/auth/interfaces/userCredentials";
+import {comparePasswords, hashPassword} from "src/modules/auth/utils/hash.util";
+import {UserCredentials} from "src/modules/auth/interfaces/userCredentials";
 import {RpcException} from "@nestjs/microservices";
 
 @Injectable()

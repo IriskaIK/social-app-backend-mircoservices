@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
-import {AuthService} from "src/auth/auth.service";
-import {UserCredentials} from "src/auth/interfaces/userCredentials";
+import {AuthService} from "src/modules/auth/auth.service";
+import {UserCredentials} from "src/modules/auth/interfaces/userCredentials";
 import {MessagePattern} from "@nestjs/microservices";
 
 @Controller('auth')

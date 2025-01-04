@@ -7,9 +7,9 @@ import {
 } from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
-import {User} from '../entities/user.entity';
-import {UserDTO} from "src/user/interfaces/UserDTO";
-import {SuccessfullResponse} from "src/user/interfaces/SuccessfullResponse";
+import {User} from 'src/entities/user.entity';
+import {UserDTO} from "src/modules/user/interfaces/UserDTO";
+import {SuccessfullResponse} from "src/modules/user/interfaces/SuccessfullResponse";
 import {RpcException} from "@nestjs/microservices";
 
 
