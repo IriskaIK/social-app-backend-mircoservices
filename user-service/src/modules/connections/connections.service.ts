@@ -88,7 +88,7 @@ export class ConnectionsService {
 
         const newStatus = await this.connectionStatusRepository.findOneBy({status: "blocked"})
 
-        await this.connectionRepository.update(connection, {
+        await this.connectionRepository.update({id : connection.id}, {
             status: newStatus,
         })
 
@@ -102,8 +102,11 @@ export class ConnectionsService {
             }
         })
 
+        if(connection){
+            await this.connectionRepository.remove(connection)
+        }
 
-        await this.connectionRepository.remove(connection)
+
     }
 
     async getFollowersById(ownerId: string) {
@@ -176,6 +179,25 @@ export class ConnectionsService {
                 }
             }
         })
+    }
+
+    async isInBlock(userId : string, toId : string) {
+        const connection = await this.connectionRepository.findOne({
+            where : {
+                following : {id : userId},
+                user : {id : toId}
+            },
+            relations : ["status"]
+        })
+
+        if(!connection){
+            return false
+        }
+
+        if(connection.status.status == 'blocked'){
+            return true
+        }
+
     }
 
 

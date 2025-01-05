@@ -47,6 +47,10 @@ export class ConnectionsService {
     async modifyConnection(connect_to_id: string, user_id : string, status : StatusTypes){
         const pattern = this.generateModifyConnectionPattern(status)
 
+        console.log('connect_to_id', connect_to_id)
+        console.log('user_id', user_id )
+
+
         const payload = {
             user_to_connect_id : connect_to_id,
             user_owner_id : user_id
@@ -58,6 +62,7 @@ export class ConnectionsService {
 
     async removeConnection(connect_to_id: string, user_id : string){
         const pattern = {cmd: 'remove_connection'}
+
 
         const payload = {
             user_to_connect_id : connect_to_id,

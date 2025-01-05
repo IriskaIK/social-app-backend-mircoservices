@@ -8,6 +8,7 @@ import { Request } from 'express';
 export class UsersController {
     constructor(private readonly appService: UsersService) {}
 
+
     @Get(':id')
     async getUserById(@Param('id') id: string, @Req() req : Request) {
         return this.appService.getUserById(id, {excludeEmail : true, excludeBirthDate : true});

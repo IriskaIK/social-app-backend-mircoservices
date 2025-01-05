@@ -63,6 +63,7 @@ export class ConnectionsController {
             return {statusCode: HttpStatus.CREATED, message: 'Connection removed'};
 
         } catch (error) {
+            console.log(error)
             if (error instanceof HttpException) {
                 throw new RpcException(error)
             }
@@ -134,6 +135,22 @@ export class ConnectionsController {
     async getPending(user_id : string){
         try {
             return this.connectionsService.getPendingById(user_id)
+        }catch (error) {
+            if (error instanceof HttpException) {
+                throw new RpcException(error)
+            }
+
+            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
+        }
+    }
+
+    @MessagePattern({cmd : 'is_in_block'})
+    async isInBlock(data : {user_id: string, to_id : string}){
+        try {
+            if(await this.connectionsService.isInBlock(data.user_id, data.to_id)){
+                return {blocked : true}
+            }
+            return {blocked : false}
         }catch (error) {
             if (error instanceof HttpException) {
                 throw new RpcException(error)
