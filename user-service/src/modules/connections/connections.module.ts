@@ -7,7 +7,7 @@ import {Connection} from "src/entities/connection.entity";
 import {ConnectionStatus} from "src/entities/connection_status.entity";
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Connection, ConnectionStatus])],
+  imports : [TypeOrmModule.forFeature([Connection, ConnectionStatus, User])],
   providers: [ConnectionsService],
   controllers: [ConnectionsController]
 })
