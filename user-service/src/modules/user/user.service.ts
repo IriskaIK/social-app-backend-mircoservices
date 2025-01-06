@@ -1,5 +1,5 @@
 import {
-    BadRequestException,
+    BadRequestException, HttpException,
     HttpStatus,
     Injectable,
     InternalServerErrorException,
@@ -55,7 +55,7 @@ export class UserService {
             return users;
         } catch (e) {
             console.log(e)
-            throw new RpcException(new InternalServerErrorException('Error in user-service during fetching users by ids.'));
+            throw new InternalServerErrorException('Error in user-service during fetching users by ids.');
         }
     }
 
@@ -64,7 +64,7 @@ export class UserService {
         try {
 
             const user = await this.userRepository.findOne({where: {email: data.userData.email}});
-            if(user && user.id != data.id) throw new RpcException(new BadRequestException('Email already used!'));
+            if(user && user.id != data.id) throw new BadRequestException('Email already used!');
 
             await this.userRepository.update(data.id, {
                 first_name : data.userData.first_name,
@@ -78,10 +78,10 @@ export class UserService {
             }
         }catch (e) {
             console.error(e)
-            if(e instanceof RpcException){
+            if(e instanceof HttpException){
                 throw e
             }
-            throw new RpcException(new InternalServerErrorException('Error in user-service during updating users by ids.')) ;
+            throw new InternalServerErrorException('Error in user-service during updating users by ids.');
 
         }
     }

@@ -5,9 +5,14 @@ import { Response } from 'express';
 @Catch(RpcException)
 export class RpcExceptionFilter implements ExceptionFilter {
     catch(exception: RpcException, host: ArgumentsHost) {
+
+
+
         const error: any = exception.getError();
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
+
+
         console.log(error)
         response
             .status(error.statusCode)

@@ -17,11 +17,10 @@ export class ConnectionsController {
             await this.connectionsService.createConnection(details.user_to_connect_id, details.user_owner_id)
             return {statusCode: HttpStatus.CREATED, message: 'Connection created'};
         } catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to create connection')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to create connection'))
         }
     }
 
@@ -33,12 +32,19 @@ export class ConnectionsController {
             return {statusCode: HttpStatus.CREATED, message: 'Connection accepted'};
 
         } catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to accept connection')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to accept connection'))
         }
+
+        // catch (error) {
+        //     if (error instanceof HttpException) {
+        //         throw new RpcException(error)
+        //     }
+        //
+        //     throw new RpcException(new InternalServerErrorException('Failed to accept connection'))
+        // }
     }
 
     @MessagePattern({cmd: "reject_connection"})
@@ -48,10 +54,10 @@ export class ConnectionsController {
             return {statusCode: HttpStatus.CREATED, message: 'Connection rejected'};
 
         } catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to reject connection')
             }
-            throw new RpcException(new InternalServerErrorException('Failed to reject connection'))
         }
 
     }
@@ -63,12 +69,10 @@ export class ConnectionsController {
             return {statusCode: HttpStatus.CREATED, message: 'Connection removed'};
 
         } catch (error) {
-            console.log(error)
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to remove connection')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to remove connection'))
         }
 
     }
@@ -80,11 +84,10 @@ export class ConnectionsController {
             return {statusCode: HttpStatus.CREATED, message: 'Connection blocked'};
 
         } catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to block connection')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to block connection'))
         }
 
     }
@@ -95,11 +98,10 @@ export class ConnectionsController {
             return this.connectionsService.getFollowersById(user_id)
 
         }catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to fetch followers')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
         }
     }
 
@@ -109,11 +111,10 @@ export class ConnectionsController {
             return this.connectionsService.getFollowingById(user_id)
 
         }catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to fetch following')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
         }
     }
 
@@ -123,11 +124,10 @@ export class ConnectionsController {
             return this.connectionsService.getBlockedById(user_id)
 
         }catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to fetch blocked')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
         }
     }
 
@@ -136,11 +136,10 @@ export class ConnectionsController {
         try {
             return this.connectionsService.getPendingById(user_id)
         }catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to block pending')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
         }
     }
 
@@ -152,11 +151,10 @@ export class ConnectionsController {
             }
             return {blocked : false}
         }catch (error) {
-            if (error instanceof HttpException) {
-                throw new RpcException(error)
+            if (error !instanceof HttpException) {
+                console.log(error)
+                throw new InternalServerErrorException('Failed to fetch blacklist')
             }
-
-            throw new RpcException(new InternalServerErrorException('Failed to fetch connections'))
         }
     }
 
