@@ -1,4 +1,4 @@
-import {BadRequestException, Controller, Get, InternalServerErrorException} from '@nestjs/common';
+import {BadRequestException, Controller, Get, HttpException, InternalServerErrorException} from '@nestjs/common';
 import { AppService } from './app.service';
 import {MessagePattern, RpcException} from "@nestjs/microservices";
 import {ITokensResponse} from "src/interfaces/ITokensResponse";
@@ -11,7 +11,7 @@ export class AppController {
   async generateToken(user: UserDTO) : Promise<{tokens : ITokensResponse}> {
 
     if (!user.id) {
-      throw new RpcException(new BadRequestException('User id is required'));
+      throw new BadRequestException('User id is required');
     }
 
     const tokens = await this.appService.generateTokens(user);
@@ -39,10 +39,9 @@ export class AppController {
       return {tokens}
     } catch (e) {
 
-      if(e instanceof BadRequestException) {
-        throw new RpcException(e)
+      if(e !instanceof HttpException) {
+        new InternalServerErrorException('Failed to refresh tokens.')
       }
-      throw new RpcException(new InternalServerErrorException('Failed to refresh tokens.'))
 
     }
   }
