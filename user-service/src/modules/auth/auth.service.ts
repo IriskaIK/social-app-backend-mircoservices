@@ -2,9 +2,8 @@ import {ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {User} from "src/entities/user.entity";
-import {comparePasswords, hashPassword} from "src/auth/utils/hash.util";
-import {UserCredentials} from "src/auth/interfaces/userCredentials";
-import {RpcException} from "@nestjs/microservices";
+import {comparePasswords, hashPassword} from "src/modules/auth/utils/hash.util";
+import {UserCredentials} from "src/modules/auth/interfaces/userCredentials";
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,7 @@ export class AuthService {
 
         const u = await this.userRepository.findOne({where: {email: userCredentials.email}})
         if (u) {
-            throw new RpcException(new ConflictException("User already exists!"));
+            throw new ConflictException("User already exists!")
         }
 
         const user = this.userRepository.create({...userCredentials, password: hashedPassword});
@@ -31,7 +30,7 @@ export class AuthService {
     async login(email: string, password: string): Promise<User> {
         const user = await this.userRepository.findOne({where: {email}});
         if (!user || !(await comparePasswords(password, user.password))) {
-            throw new RpcException(new NotFoundException('Invalid credentials'));
+            throw new NotFoundException('Invalid credentials');
         }
         return user;
     }

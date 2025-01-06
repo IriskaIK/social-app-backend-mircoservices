@@ -1,8 +1,8 @@
 import {Controller, Post, Body, Get, Param, Inject} from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from 'src/modules/user/user.service';
 import {ClientProxy, MessagePattern} from "@nestjs/microservices";
-import {UserDTO} from "src/user/interfaces/UserDTO";
-import {SuccessfullResponse} from "src/user/interfaces/SuccessfullResponse";
+import {UserDTO} from "src/modules/user/interfaces/UserDTO";
+import {SuccessfullResponse} from "src/modules/user/interfaces/SuccessfullResponse";
 
 @Controller('users')
 export class UserController {
