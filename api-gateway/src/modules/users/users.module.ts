@@ -30,6 +30,14 @@ import {AuthGuard} from "src/guards/auth.guard";
           port: +process.env.TOKEN_SERVICE_PORT
         }
       },
+      {
+        name : "FILE_SERVICE",
+        transport: Transport.TCP,
+        options: {
+          host: "127.0.0.1",
+          port: +process.env.FILE_SERVICE_PORT
+        }
+      }
 
     ]),
   ],

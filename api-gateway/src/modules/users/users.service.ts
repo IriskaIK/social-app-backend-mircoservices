@@ -10,6 +10,7 @@ import {Request} from 'express';
 export class UsersService {
     constructor(
         @Inject("USER_SERVICE") private readonly userService: ClientProxy,
+        @Inject("FILE_SERVICE") private readonly fileService: ClientProxy
     ) {
     }
 
@@ -39,6 +40,24 @@ export class UsersService {
         }
 
         return await firstValueFrom(this.userService.send(pattern, {id: req.user.id, userData: data})
+            .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
+    }
+
+    async uploadProfileImage(filename: string, fileBuffer: Buffer) {
+        const pattern = {cmd: 'upload_profile_image'}
+
+        // TODO: pass prev imageId
+        return await firstValueFrom(this.fileService.send(pattern, {
+            filename: filename,
+            fileBuffer: fileBuffer,
+        })
+            .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
+
+    }
+
+    async getProfileImage(id:string){
+        const pattern = {cmd: 'get_profile_image'}
+        return await firstValueFrom(this.fileService.send(pattern, id)
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
     }
 }

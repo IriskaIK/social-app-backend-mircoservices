@@ -8,28 +8,19 @@ import { UpdateUserImageDto } from 'src/modules/user-images/dto/update-user-imag
 export class UserImagesController {
   constructor(private readonly userImagesService: UserImagesService) {}
 
-  @MessagePattern('createUserImage')
-  create(@Payload() createUserImageDto: CreateUserImageDto) {
-    return this.userImagesService.create(createUserImageDto);
+  @MessagePattern({cmd : 'upload_profile_image'})
+  async uploadImage(@Payload() createUserImageDto: CreateUserImageDto) {
+    return await this.userImagesService.uploadImage(createUserImageDto);
   }
 
-  @MessagePattern('findAllUserImages')
-  findAll() {
-    return this.userImagesService.findAll();
-  }
-
-  @MessagePattern('findOneUserImage')
-  findOne(@Payload() id: number) {
+  @MessagePattern({cmd : 'get_profile_image'})
+  findOne(@Payload() id: string) {
     return this.userImagesService.findOne(id);
-  }
-
-  @MessagePattern('updateUserImage')
-  update(@Payload() updateUserImageDto: UpdateUserImageDto) {
-    return this.userImagesService.update(updateUserImageDto.id, updateUserImageDto);
   }
 
   @MessagePattern('removeUserImage')
   remove(@Payload() id: number) {
+    //TODO: implement
     return this.userImagesService.remove(id);
   }
 }

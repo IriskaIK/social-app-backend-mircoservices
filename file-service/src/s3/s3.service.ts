@@ -6,9 +6,10 @@ import {
     PutObjectCommandInput,
     S3Client
 } from "@aws-sdk/client-s3";
+import { Upload } from '@aws-sdk/lib-storage';
+
 import {v4 as uuidv4} from 'uuid';
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
-
 import {ConfigService} from "@nestjs/config";
 
 @Injectable()
@@ -29,16 +30,22 @@ export class S3Service {
     async uploadFile(file: Buffer, fileName: string): Promise<{ key: string }> {
         const key = `${uuidv4()}-${fileName}`;
         try {
-            const uploadParams: PutObjectCommandInput = {
-                Bucket: this.configService.getOrThrow('AWS_S3_BUCKET_NAME'),
-                Key: key,
-                Body: file,
-            };
-            await this.s3Client.send(new PutObjectCommand(uploadParams));
+
+            const upload = new Upload({
+                client : this.s3Client,
+                params : {
+                    Bucket: this.configService.getOrThrow('AWS_S3_BUCKET_NAME'),
+                    Key: key,
+                    Body: Buffer.from(file),
+                }
+            })
+
+            await upload.done()
+
             return {key}
         } catch (error) {
             console.log(error)
-            throw new InternalServerErrorException('Something went wrong');
+            throw new InternalServerErrorException('Failed to connect to S3Service');
         }
     }
 
