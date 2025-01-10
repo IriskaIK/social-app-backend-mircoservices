@@ -14,13 +14,13 @@ export class UserImagesController {
   }
 
   @MessagePattern({cmd : 'get_profile_image'})
-  findOne(@Payload() id: string) {
-    return this.userImagesService.findOne(id);
+  findOne(@Payload() owner_id: string) {
+    return this.userImagesService.findOne(owner_id);
   }
 
   @MessagePattern({cmd : 'remove_profile_image'})
-  removeImageByID(@Payload() id: string) {
-    return this.userImagesService.remove(id)
+  removeImageByID(@Payload() owner_id: string) {
+    return this.userImagesService.remove(owner_id)
   }
 
 }
