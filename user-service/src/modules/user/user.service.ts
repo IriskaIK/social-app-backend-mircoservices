@@ -86,4 +86,22 @@ export class UserService {
         }
     }
 
+    async updateImage(uid : string, imageId: string): Promise<SuccessfullResponse> {
+        try {
+            await this.userRepository.update({id: uid}, {
+                image_id : imageId
+            });
+            return {
+                message : "Image updated",
+                status : HttpStatus.OK
+            }
+        }catch (e) {
+            console.error(e)
+            if(e instanceof HttpException){
+                throw e
+            }
+            throw new InternalServerErrorException('Error in user-service during updating users by ids.');
+        }
+    }
+
 }

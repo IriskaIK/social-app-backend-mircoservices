@@ -45,7 +45,7 @@ export class UsersController {
         return this.appService.updateUserById(data, req);
     }
 
-
+    @UseGuards(AuthGuard)
     @Post('/profile-image')
     @UseInterceptors(FileInterceptor('file'))
     async uploadProfileImage(
@@ -56,9 +56,9 @@ export class UsersController {
                     new FileTypeValidator({fileType : 'image/'})
                 ]
             })
-        ) file: Express.Multer.File
+        ) file: Express.Multer.File, @Req() req : Request
     ){
-        return await this.appService.uploadProfileImage(file.originalname, file.buffer)
+        return await this.appService.uploadProfileImage(file.originalname, file.buffer, req.user.id)
     }
 
     @Get('/profile-image/:id')

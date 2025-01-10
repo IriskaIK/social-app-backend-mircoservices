@@ -12,6 +12,9 @@ export class UserImage {
     @Column()
     filename: string;
 
+    @Column()
+    owner_id : string;
+
     @CreateDateColumn()
     createdAt: Date;
 

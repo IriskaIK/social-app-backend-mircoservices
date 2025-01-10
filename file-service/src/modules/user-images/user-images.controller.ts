@@ -18,6 +18,11 @@ export class UserImagesController {
     return this.userImagesService.findOne(id);
   }
 
+  @MessagePattern({cmd : 'get_profile_images_by_id'})
+  findByIds(@Payload() id: string[]) {
+
+  }
+
   @MessagePattern('removeUserImage')
   remove(@Payload() id: number) {
     //TODO: implement

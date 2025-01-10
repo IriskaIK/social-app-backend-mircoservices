@@ -43,16 +43,20 @@ export class UsersService {
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
     }
 
-    async uploadProfileImage(filename: string, fileBuffer: Buffer) {
+    async uploadProfileImage(filename: string, fileBuffer: Buffer, userId : string) {
         const pattern = {cmd: 'upload_profile_image'}
 
-        // TODO: pass prev imageId
-        return await firstValueFrom(this.fileService.send(pattern, {
+        const profileImage: {id : string, key : string} =  await firstValueFrom(this.fileService.send(pattern, {
             filename: filename,
             fileBuffer: fileBuffer,
+            owner_id : userId
         })
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
 
+        this.userService.send({cmd : 'update_image_id'}, {uid : profileImage.id, imageId : profileImage.id})
+            .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+
+        return profileImage
     }
 
     async getProfileImage(id:string){

@@ -18,6 +18,11 @@ export class UserImagesService {
     async uploadImage(createUserImageDto: CreateUserImageDto) {
         //TODO: remove prev image if exists
         try {
+
+            const prevImage = await this.imageRepository.findOne({where : {
+                owner_id : createUserImageDto.owner_id
+                }})
+
             const filename = createUserImageDto.filename.replaceAll(" ", "")
 
 
@@ -25,9 +30,15 @@ export class UserImagesService {
 
             const image = this.imageRepository.create({
                 filepath : key,
-                filename : filename
+                filename : filename,
+                owner_id : createUserImageDto.owner_id
             })
-            await this.imageRepository.save(image)
+
+            await this.imageRepository.save(image);
+
+            if(prevImage){
+                await this.imageRepository.remove(prevImage);
+            }
 
             return {id : image.id, key : image.filepath};
 

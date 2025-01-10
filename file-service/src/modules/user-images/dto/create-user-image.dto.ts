@@ -1,7 +1,6 @@
 export class CreateUserImageDto {
     filename : string;
     fileBuffer : Buffer;
-
-    prevImageId : string
+    owner_id : string;
 
 }
