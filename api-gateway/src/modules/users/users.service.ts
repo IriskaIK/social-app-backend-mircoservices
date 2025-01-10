@@ -11,6 +11,9 @@ import {UserDTO} from "src/interfaces/UserDTO";
 import {catchError, firstValueFrom, throwError} from "rxjs";
 import {SuccessfullResponse} from "src/interfaces/SuccessfullResponse";
 import {Request} from 'express';
+import {UpdateUserDto} from "src/modules/users/dto/update-user.dto";
+import {UserShortProfileInfoDto} from "src/modules/users/dto/user-short-profile-info.dto";
+import {UserFullProfileIntoDto} from "src/modules/users/dto/user-full-profile-into.dto";
 
 
 @Injectable({scope: Scope.REQUEST})
@@ -21,7 +24,7 @@ export class UsersService {
     ) {
     }
 
-    async getUserById(id: string, options: { excludeEmail: boolean, excludeBirthDate: boolean }): Promise<UserDTO> {
+    async getUserById(id: string, options: { excludeEmail: boolean, excludeBirthDate: boolean }): Promise<UserFullProfileIntoDto> {
 
 
         const pattern = {cmd: 'find_user_by_id'}
@@ -37,13 +40,13 @@ export class UsersService {
     }
 
 
-    async getUsersByIds(ids: string[]): Promise<UserDTO[]> {
+    async getUsersByIds(ids: string[]): Promise<UserShortProfileInfoDto[]> {
         const pattern = {cmd: 'find_users_by_ids'}
         return await firstValueFrom(this.userService.send(pattern, ids)
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
     }
 
-    async updateUserById(data: UserDTO, req: Request): Promise<SuccessfullResponse> {
+    async updateUserById(data: UpdateUserDto, req: Request): Promise<SuccessfullResponse> {
         const pattern = {cmd: 'update_user_by_id'}
 
         if (!req.user.id) {

@@ -17,6 +17,9 @@ import {AuthGuard} from "src/guards/auth.guard";
 import { Request } from 'express';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ClientProxy} from "@nestjs/microservices";
+import {UpdateUserDto} from "src/modules/users/dto/update-user.dto";
+import {UserShortProfileInfoDto} from "src/modules/users/dto/user-short-profile-info.dto";
+import {UserFullProfileIntoDto} from "src/modules/users/dto/user-full-profile-into.dto";
 
 @Controller('users')
 export class UsersController {
@@ -24,24 +27,24 @@ export class UsersController {
 
 
     @Get(':id')
-    async getUserById(@Param('id') id: string, @Req() req : Request) {
+    async getUserById(@Param('id') id: string, @Req() req : Request) : Promise<UserShortProfileInfoDto> {
         return this.appService.getUserById(id, {excludeEmail : true, excludeBirthDate : true});
     }
 
     @Post('/users')
-    async getUsersById(@Body() data : { userIds : string[] }) {
+    async getUsersById(@Body() data : { userIds : string[] }) : Promise<UserShortProfileInfoDto[]> {
         return this.appService.getUsersByIds(data.userIds)
     }
 
     @UseGuards(AuthGuard)
     @Get()
-    async getUserByReq(@Req() req : Request) {
+    async getUserByReq(@Req() req : Request): Promise<UserFullProfileIntoDto> {
         return this.appService.getUserById(req.user.id, {excludeEmail : false, excludeBirthDate : false})
     }
 
     @UseGuards(AuthGuard)
     @Put('')
-    async updateUser(@Body() data: UserDTO, @Req() req: Request) {
+    async updateUser(@Body() data: UpdateUserDto, @Req() req: Request) {
         return this.appService.updateUserById(data, req);
     }
 
