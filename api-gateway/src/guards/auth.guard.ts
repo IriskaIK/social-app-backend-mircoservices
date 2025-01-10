@@ -46,7 +46,6 @@ export class AuthGuard implements CanActivate {
             if (!response.valid || !response.payload.id) {
                 throw new HttpException('Invalid token payload', HttpStatus.UNAUTHORIZED);
             }
-            console.log(response)
             request.user = response.payload;
             return true;
         } catch (error) {

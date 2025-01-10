@@ -1,8 +1,22 @@
-import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
+import {
+    Body,
+    Controller, Delete, FileTypeValidator,
+    Get, Inject, MaxFileSizeValidator,
+    Param,
+    ParseFilePipe,
+    Post,
+    Put,
+    Req,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
+} from '@nestjs/common';
 import {UsersService} from "src/modules/users/users.service";
 import {UserDTO} from "src/interfaces/UserDTO";
 import {AuthGuard} from "src/guards/auth.guard";
 import { Request } from 'express';
+import {FileInterceptor} from "@nestjs/platform-express";
+import {ClientProxy} from "@nestjs/microservices";
 
 @Controller('users')
 export class UsersController {
@@ -30,4 +44,32 @@ export class UsersController {
     async updateUser(@Body() data: UserDTO, @Req() req: Request) {
         return this.appService.updateUserById(data, req);
     }
+
+    @UseGuards(AuthGuard)
+    @Post('/profile-image')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadProfileImage(
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({maxSize: 2000000}),
+                    new FileTypeValidator({fileType : 'image/'})
+                ]
+            })
+        ) file: Express.Multer.File, @Req() req : Request
+    ){
+        return await this.appService.uploadProfileImage(file.originalname, file.buffer, req.user.id, req)
+    }
+
+    @Get('/profile-image/:id')
+    async getProfileImage(@Param('id') id: string, @Req() req : Request) {
+        return this.appService.getProfileImage(id)
+    }
+
+    @UseGuards(AuthGuard)
+    @Delete('/profile-image/')
+    async removeProfileImage(@Req() req : Request) {
+        return this.appService.removeProfileImage(req.user.id)
+    }
+
 }

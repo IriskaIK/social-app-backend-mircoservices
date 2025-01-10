@@ -1,6 +1,6 @@
 import {Controller, Post, Body, Get, Param, Inject} from '@nestjs/common';
 import { UserService } from 'src/modules/user/user.service';
-import {ClientProxy, MessagePattern} from "@nestjs/microservices";
+import {ClientProxy, MessagePattern, Payload} from "@nestjs/microservices";
 import {UserDTO} from "src/modules/user/interfaces/UserDTO";
 import {SuccessfullResponse} from "src/modules/user/interfaces/SuccessfullResponse";
 
@@ -27,6 +27,13 @@ export class UserController {
     async updateById(data : {id: string, userData: UserDTO}) : Promise<SuccessfullResponse> {
         return this.userService.updateById(data);
     }
+
+    @MessagePattern({cmd : 'update_image_id'})
+    async updateImage(@Payload() data : {uid : string, imageId: string | null}){
+        console.log(data)
+        return this.userService.updateImage(data.uid, data.imageId)
+    }
+
 
 
 

@@ -7,4 +7,5 @@ export interface UserDTO{
     birthday : string;
     created_at : string;
     updated_at: string;
+    image_id : string | null;
 }

@@ -25,6 +25,11 @@ export class UserService {
 
     async findById(userId: string, excludeEmail : boolean = true, excludeBirthDate : boolean = true): Promise<User> {
         let user: User
+
+        if(isNaN(+userId)){
+            throw new BadRequestException('Invalid user id')
+        }
+
         try {
             user = await this.userRepository.findOne({where: {id: userId}});
         } catch (error) {
@@ -83,6 +88,24 @@ export class UserService {
             }
             throw new InternalServerErrorException('Error in user-service during updating users by ids.');
 
+        }
+    }
+
+    async updateImage(uid : string, imageId: string): Promise<SuccessfullResponse> {
+        try {
+            await this.userRepository.update({id: uid}, {
+                image_id : imageId
+            });
+            return {
+                message : "Image updated",
+                status : HttpStatus.OK
+            }
+        }catch (e) {
+            console.error(e)
+            if(e instanceof HttpException){
+                throw e
+            }
+            throw new InternalServerErrorException('Error in user-service during updating users by ids.');
         }
     }
 

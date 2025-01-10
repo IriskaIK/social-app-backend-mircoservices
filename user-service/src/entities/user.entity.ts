@@ -17,8 +17,8 @@ export class User {
     @Column()
     last_name: string;
 
-    @Column({type : "bigint", nullable : true})
-    image_id : number;
+    @Column({nullable : true})
+    image_id : string;
 
     @Column({ type: 'date', nullable: true })
     birthday: Date;

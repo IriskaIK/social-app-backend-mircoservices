@@ -3,14 +3,15 @@ import {
     Body,
     Catch,
     Controller,
-    Get,
+    Get, MaxFileSizeValidator, ParseFilePipe,
     Post,
-    RpcExceptionFilter,
+    RpcExceptionFilter, UploadedFile,
     UseFilters,
-    UseGuards
+    UseGuards, UseInterceptors
 } from '@nestjs/common';
 import {AppService} from './app.service';
 import {AuthGuard} from "src/guards/auth.guard";
+import {FileInterceptor} from '@nestjs/platform-express';
 
 
 @Controller()
@@ -24,5 +25,7 @@ export class AppController {
     getHello(): string {
         return this.appService.getHello();
     }
+
+
 
 }
