@@ -143,7 +143,7 @@ export class ConnectionsController {
     }
 
     @MessagePattern({cmd : 'is_in_block'})
-    async isInBlock(data : {user_id: string, to_id : string}){
+    async isInBlock(data : IsInBlockReq){
         try {
             if(await this.connectionsService.isInBlock(data.user_id, data.to_id)){
                 return {blocked : true}
