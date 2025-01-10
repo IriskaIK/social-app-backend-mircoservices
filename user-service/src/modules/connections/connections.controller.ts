@@ -3,7 +3,6 @@ import {MessagePattern, RpcException} from "@nestjs/microservices";
 import {ConnectionsService} from "src/modules/connections/connections.service";
 
 
-//TODO : implement filters on HTTP exception. Send them as RpcException.
 
 @Controller('connections')
 export class ConnectionsController {

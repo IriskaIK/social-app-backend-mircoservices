@@ -7,7 +7,7 @@ export interface IUser {
     email: string,
     first_name: string,
     last_name: string,
-    image_id: number | null,
+    image_id: string | null,
     birthday: string | null,
     id: string,
     createdAt: string,

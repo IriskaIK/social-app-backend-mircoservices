@@ -1,5 +1,6 @@
 import {Injectable, InternalServerErrorException} from '@nestjs/common';
 import {
+    DeleteObjectCommand,
     GetObjectCommand,
     GetObjectCommandInput,
     PutObjectCommand,
@@ -46,6 +47,20 @@ export class S3Service {
         } catch (error) {
             console.log(error)
             throw new InternalServerErrorException('Failed to connect to S3Service');
+        }
+    }
+
+    async removeFile(key : string){
+        try {
+            const deleteParams = {
+                Bucket: this.configService.getOrThrow('AWS_S3_BUCKET_NAME'),
+                Key: key,
+            };
+            await this.s3Client.send(new DeleteObjectCommand(deleteParams));
+            console.log(`File with key "${key}" deleted successfully.`);
+        } catch (error) {
+            console.error('Error deleting file from S3:', error);
+            throw new InternalServerErrorException('Failed to delete file from S3');
         }
     }
 

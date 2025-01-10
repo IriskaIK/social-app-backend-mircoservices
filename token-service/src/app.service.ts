@@ -102,6 +102,7 @@ export class AppService {
         const accessTokenPromise = this.jwtService.signAsync(
             {
                 id: user.id,
+                image_id : user.image_id,
                 tokenType: TokenType.ACCESS_TOKEN,
             },
             {
@@ -112,6 +113,7 @@ export class AppService {
         const refreshTokenPromise = this.jwtService.signAsync(
             {
                 id: user.id,
+                image_id : user.image_id,
                 tokenType: TokenType.REFRESH_TOKEN,
             },
             {

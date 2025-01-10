@@ -1,4 +1,4 @@
-import {HttpException, Injectable, InternalServerErrorException} from '@nestjs/common';
+import {BadRequestException, HttpException, Injectable, InternalServerErrorException} from '@nestjs/common';
 import {CreateUserImageDto} from 'src/modules/user-images/dto/create-user-image.dto';
 import {UpdateUserImageDto} from 'src/modules/user-images/dto/update-user-image.dto';
 import {S3Service} from "src/s3/s3.service";
@@ -16,7 +16,6 @@ export class UserImagesService {
 
 
     async uploadImage(createUserImageDto: CreateUserImageDto) {
-        //TODO: remove prev image if exists
         try {
 
             const prevImage = await this.imageRepository.findOne({where : {
@@ -37,7 +36,8 @@ export class UserImagesService {
             await this.imageRepository.save(image);
 
             if(prevImage){
-                await this.imageRepository.remove(prevImage);
+                await this.s3Service.removeFile(prevImage.filepath)
+                await this.imageRepository.remove(prevImage)
             }
 
             return {id : image.id, key : image.filepath};
@@ -56,7 +56,9 @@ export class UserImagesService {
     async findOne(id: string) {
         try {
             const image = await this.imageRepository.findOne({where : {id : id}})
-
+            if(!image){
+                throw new BadRequestException('Image not found')
+            }
             const {signedUrl} = await this.s3Service.getSignedUrl(image.filepath)
 
             return {signedUrl}
@@ -71,8 +73,24 @@ export class UserImagesService {
     }
 
 
-    remove(id: number) {
-        //TODO: implement
-        return `This action removes a #${id} userImage`;
+    async remove(id: string) {
+        try {
+            const image = await this.imageRepository.findOne({where : {
+                    id : id
+                }})
+            if(!image){
+                throw new BadRequestException('Image not found')
+            }
+            await this.s3Service.removeFile(image.filepath)
+            await this.imageRepository.remove(image)
+            return {success: true}
+        }catch (e) {
+            console.log(e)
+            if(e instanceof HttpException) {
+                throw e
+            }
+            throw new InternalServerErrorException("Failed to remove profile image");
+
+        }
     }
 }

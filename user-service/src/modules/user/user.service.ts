@@ -25,6 +25,11 @@ export class UserService {
 
     async findById(userId: string, excludeEmail : boolean = true, excludeBirthDate : boolean = true): Promise<User> {
         let user: User
+
+        if(isNaN(+userId)){
+            throw new BadRequestException('Invalid user id')
+        }
+
         try {
             user = await this.userRepository.findOne({where: {id: userId}});
         } catch (error) {

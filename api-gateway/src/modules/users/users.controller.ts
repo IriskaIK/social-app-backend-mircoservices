@@ -1,6 +1,6 @@
 import {
     Body,
-    Controller, FileTypeValidator,
+    Controller, Delete, FileTypeValidator,
     Get, Inject, MaxFileSizeValidator,
     Param,
     ParseFilePipe,
@@ -58,11 +58,18 @@ export class UsersController {
             })
         ) file: Express.Multer.File, @Req() req : Request
     ){
-        return await this.appService.uploadProfileImage(file.originalname, file.buffer, req.user.id)
+        return await this.appService.uploadProfileImage(file.originalname, file.buffer, req.user.id, req)
     }
 
     @Get('/profile-image/:id')
     async getProfileImage(@Param('id') id: string, @Req() req : Request) {
         return this.appService.getProfileImage(id)
     }
+
+    @UseGuards(AuthGuard)
+    @Delete('/profile-image/')
+    async removeProfileImage(@Req() req : Request) {
+        return this.appService.removeProfileImage(req.user.id)
+    }
+
 }

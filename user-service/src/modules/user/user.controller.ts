@@ -29,9 +29,11 @@ export class UserController {
     }
 
     @MessagePattern({cmd : 'update_image_id'})
-    async updateImage(@Payload() data : {uid : string, imageId: string}){
+    async updateImage(@Payload() data : {uid : string, imageId: string | null}){
+        console.log(data)
         return this.userService.updateImage(data.uid, data.imageId)
     }
+
 
 
 
