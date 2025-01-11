@@ -1,0 +1,221 @@
+asyncapi: 3.0.0
+info:
+  title: Token Service API
+  version: 1.0.0
+  description: >-
+    API for user-related operations, including finding users, updating profiles, and updating images.
+
+components:
+  schemas:
+    messages:
+      type: object
+      properties:
+        GenerateTokensPayload:
+          type: object
+          properties:
+            id:
+              type: string
+              description: User ID.
+          additionalProperties: false
+          required:
+            - 'id'
+
+        VerifyTokenPayload:
+          type: object
+          properties:
+            access_token:
+              type: string
+              description: Access token.
+          additionalProperties: false
+          required:
+            - 'access_token'
+
+        RefreshTokenPayload:
+          type: object
+          properties:
+            refresh_token:
+              type: string
+              description: Refresh token.
+          additionalProperties: false
+          -required:
+            - 'refresh_token'
+
+        BlackListTokensPayload:
+          type: object
+          properties:
+            refresh_token:
+              type: string
+              description: Refresh token.
+            access_token:
+              type: string
+              description: Access token.
+          additionalProperties: false
+          required:
+            - 'refresh_token'
+            - 'access_token'
+
+
+
+    reply:
+      type: object
+      properties:
+        RefreshTokenResponse:
+          type: object
+          properties:
+            access_token:
+              type : string
+              description: New access token.
+            refresh_token:
+              type: string
+              description: New refresh token.
+
+        VerifyTokenResponse:
+          type: object
+          properties:
+            valid:
+              type: boolean
+              description: Is token valid.
+            payload:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: User id from token.
+
+        GenerateTokensResponse:
+          type: object
+          properties:
+            access_token:
+              type: string
+              description: Generated access token.
+            refresh_token:
+              type: string
+              description: Generated refresh token.
+          additionalProperties: false
+
+channels:
+
+  generate_tokens:
+    address: generate_tokens
+    messages:
+      subscribe.message:
+        name: Generate Tokens
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/GenerateTokensPayload'
+        summary: Generates refresh and access tokens.
+
+      reply.message:
+        name: Generate Tokens Response
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/GenerateTokensResponse'
+        summary: Returns generated tokens.
+    description: Generating refresh and access tokens.
+
+  verify_token:
+    address: verify_token
+    messages:
+      subscribe.message:
+        name: Verify Access Token
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/VerifyTokenPayload'
+        summary: Verify access token.
+
+      reply.message:
+        name: Verified Access Token
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/VerifyTokenResponse'
+        summary: Verified access token.
+
+    description: Verifying access token.
+
+  refresh_tokens:
+    address: refresh_tokens
+    messages:
+      subscribe.message:
+        name: Refresh Tokens
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/RefreshTokenPayload'
+        summary: Refreshes access and refresh tokens.
+
+      reply.message:
+        name: Refreshed Tokens
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/RefreshTokenResponse'
+        summary: Refreshed access and refresh tokens.
+    description: Refreshing of access and refresh token.
+
+  blacklist_tokens:
+    address: blacklist_tokens
+    messages:
+      subscribe.message:
+        name: Blacklist Tokens
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/BlackListTokensPayload'
+        summary: Blacklist access and refresh tokens.
+    description: Blacklisting of access and refresh token.
+
+  generate_tokens_response:
+    address: blacklist_tokens
+    messages:
+      subscribe.message:
+        name: Blacklist Tokens
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/GenerateTokensResponse'
+        summary: Blacklist access and refresh tokens.
+    description: Blacklisting of access and refresh token.
+
+
+operations:
+  generate_tokens:
+    action: receive
+    channel:
+      $ref: '#/channels/generate_tokens'
+    messages:
+      - $ref: '#/channels/generate_tokens/messages/subscribe.message'
+
+    reply:
+      channel:
+        $ref: '#/channels/generate_tokens'
+      messages:
+        - $ref: '#/channels/generate_tokens/messages/reply.message'
+
+  verify_token:
+    action: receive
+    channel:
+      $ref: '#/channels/verify_token'
+    messages:
+      - $ref: '#/channels/verify_token/messages/subscribe.message'
+
+    reply:
+      channel:
+        $ref: '#/channels/verify_token'
+      messages:
+        - $ref: '#/channels/verify_token/messages/reply.message'
+
+  refresh_tokens:
+    action: receive
+    channel:
+      $ref: '#/channels/refresh_tokens'
+    messages:
+      - $ref: '#/channels/refresh_tokens/messages/subscribe.message'
+
+    reply:
+      channel:
+        $ref: '#/channels/refresh_tokens'
+      messages:
+        - $ref: '#/channels/refresh_tokens/messages/reply.message'
+
+  blacklist_tokens:
+    action: receive
+    channel:
+      $ref: '#/channels/blacklist_tokens'
+    messages:
+      - $ref: '#/channels/blacklist_tokens/messages/subscribe.message'
