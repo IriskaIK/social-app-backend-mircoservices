@@ -1,0 +1,105 @@
+asyncapi: 3.0.0
+info:
+  title: File Service API
+  version: 1.0.0
+  description: >-
+    API for file-related operations, including S3 interaction, uploading, retrieving, removing images
+
+components:
+  schemas:
+    messages:
+      type: object
+      properties:
+        OwnerUserImageIdPayload:
+          type: object
+          properties:
+            owner_id:
+              type: string
+              description: ID of image-owner.
+
+        UploadUserImagePayload:
+          type: object
+          properties:
+            filename:
+              type: string
+              description: Original file name.
+            fileBuffer:
+              type: object
+              description: File buffer.
+            owner_id:
+              type: string
+              description: ID of image-owner.
+
+
+    reply:
+      type: object
+      properties:
+        RetrieveUserImageUrlResponse:
+          type: object
+          properties:
+            signed_url:
+              type: string
+              description: Signed url of user image.
+
+
+channels:
+  upload_profile_image:
+    address: upload_profile_image
+    messages:
+      subscribe.message:
+        name: Upload profile image.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/UploadUserImagePayload'
+        summary: Uploads profile image to S3.
+  get_profile_image:
+    address: get_profile_image
+    messages:
+      subscribe.message:
+        name: Retrieve profile image url.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/OwnerUserImageIdPayload'
+        summary: Retrieving profile image url from S3.
+      reply.message:
+        name: Replying profile image url.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/RetrieveUserImageUrlResponse'
+        summary: Replying with profile image url from S3.
+  remove_profile_image:
+    address: remove_profile_image
+    messages:
+      subscribe.message:
+        name: Delete profile image.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/OwnerUserImageIdPayload'
+        summary: Deletes profile image from S3.
+
+operations:
+  upload_profile_image:
+    action: receive
+    channel:
+      $ref: '#/channels/upload_profile_image'
+    messages:
+      - $ref: '#/channels/upload_profile_image/messages/subscribe.message'
+
+  get_profile_image:
+    action: receive
+    channel:
+      $ref: '#/channels/get_profile_image'
+    messages:
+      - $ref: '#/channels/get_profile_image/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/get_profile_image'
+      messages:
+        - $ref: '#/channels/get_profile_image/messages/reply.message'
+
+  remove_profile_image:
+    action: receive
+    channel:
+      $ref: '#/channels/remove_profile_image'
+    messages:
+      - $ref: '#/channels/remove_profile_image/messages/subscribe.message'

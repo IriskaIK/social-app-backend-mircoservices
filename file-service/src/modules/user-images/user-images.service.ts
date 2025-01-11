@@ -40,8 +40,6 @@ export class UserImagesService {
                 await this.imageRepository.remove(prevImage)
             }
 
-            return {id : image.id, key : image.filepath};
-
         } catch (error) {
             console.log(error)
             if (error instanceof HttpException) {
