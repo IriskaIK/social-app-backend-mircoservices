@@ -40,8 +40,6 @@ export class UserImagesService {
                 await this.imageRepository.remove(prevImage)
             }
 
-            return {id : image.id, key : image.filepath};
-
         } catch (error) {
             console.log(error)
             if (error instanceof HttpException) {
@@ -55,7 +53,7 @@ export class UserImagesService {
 
     async findOne(id: string) {
         try {
-            const image = await this.imageRepository.findOne({where : {id : id}})
+            const image = await this.imageRepository.findOne({where : {owner_id : id}})
             if(!image){
                 throw new BadRequestException('Image not found')
             }
@@ -76,7 +74,7 @@ export class UserImagesService {
     async remove(id: string) {
         try {
             const image = await this.imageRepository.findOne({where : {
-                    id : id
+                    owner_id : id
                 }})
             if(!image){
                 throw new BadRequestException('Image not found')
