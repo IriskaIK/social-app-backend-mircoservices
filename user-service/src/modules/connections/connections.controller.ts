@@ -1,5 +1,5 @@
 import {Controller, HttpException, HttpStatus, InternalServerErrorException} from '@nestjs/common';
-import {MessagePattern, RpcException} from "@nestjs/microservices";
+import {EventPattern, MessagePattern, RpcException} from "@nestjs/microservices";
 import {ConnectionsService} from "src/modules/connections/connections.service";
 
 
@@ -10,10 +10,10 @@ export class ConnectionsController {
     }
 
 
-    @MessagePattern({cmd: "create_connection"})
-    async createRequest(details: ConnectionDTO) {
+    @EventPattern("create_connection")
+    async createRequest(payload: ConnectionDTO) {
         try {
-            await this.connectionsService.createConnection(details.user_to_connect_id, details.user_owner_id)
+            await this.connectionsService.createConnection(payload.user_to_connect_id, payload.user_owner_id)
             return {statusCode: HttpStatus.CREATED, message: 'Connection created'};
         } catch (error) {
             if (error !instanceof HttpException) {
@@ -24,10 +24,10 @@ export class ConnectionsController {
     }
 
 
-    @MessagePattern({cmd: "accept_connection"})
-    async acceptRequest(details: ConnectionDTO) {
+    @EventPattern("accept_connection")
+    async acceptRequest(payload: ConnectionDTO) {
         try {
-            await this.connectionsService.changeConnectionStatus(details.user_to_connect_id, details.user_owner_id, 'accepted')
+            await this.connectionsService.changeConnectionStatus(payload.user_to_connect_id, payload.user_owner_id, 'accepted')
             return {statusCode: HttpStatus.CREATED, message: 'Connection accepted'};
 
         } catch (error) {
@@ -46,10 +46,10 @@ export class ConnectionsController {
         // }
     }
 
-    @MessagePattern({cmd: "reject_connection"})
-    async rejectRequest(details: ConnectionDTO) {
+    @EventPattern("reject_connection")
+    async rejectRequest(payload: ConnectionDTO) {
         try {
-            await this.connectionsService.changeConnectionStatus(details.user_to_connect_id, details.user_owner_id, 'rejected')
+            await this.connectionsService.changeConnectionStatus(payload.user_to_connect_id, payload.user_owner_id, 'rejected')
             return {statusCode: HttpStatus.CREATED, message: 'Connection rejected'};
 
         } catch (error) {
@@ -61,10 +61,10 @@ export class ConnectionsController {
 
     }
 
-    @MessagePattern({cmd: "remove_connection"})
-    async unfollowUser(details: ConnectionDTO) {
+    @EventPattern("remove_connection")
+    async unfollowUser(payload: ConnectionDTO) {
         try {
-            await this.connectionsService.removeConnection(details.user_to_connect_id, details.user_owner_id)
+            await this.connectionsService.removeConnection(payload.user_to_connect_id, payload.user_owner_id)
             return {statusCode: HttpStatus.CREATED, message: 'Connection removed'};
 
         } catch (error) {
@@ -76,10 +76,10 @@ export class ConnectionsController {
 
     }
 
-    @MessagePattern({cmd: "block_connection"})
-    async blockUser(details: ConnectionDTO) {
+    @EventPattern("block_connection")
+    async blockUser(payload: ConnectionDTO) {
         try {
-            await this.connectionsService.blockConnection(details.user_to_connect_id, details.user_owner_id)
+            await this.connectionsService.blockConnection(payload.user_to_connect_id, payload.user_owner_id)
             return {statusCode: HttpStatus.CREATED, message: 'Connection blocked'};
 
         } catch (error) {
@@ -91,10 +91,10 @@ export class ConnectionsController {
 
     }
 
-    @MessagePattern({cmd : "get_followers"})
-    async getFollowers(user_id : string){
+    @MessagePattern("get_followers")
+    async getFollowers(payload : {user_id: string}){
         try {
-            return this.connectionsService.getFollowersById(user_id)
+            return this.connectionsService.getFollowersById(payload.user_id)
 
         }catch (error) {
             if (error !instanceof HttpException) {
@@ -104,10 +104,10 @@ export class ConnectionsController {
         }
     }
 
-    @MessagePattern({cmd : "get_following"})
-    async getFollowing(user_id : string){
+    @MessagePattern("get_following")
+    async getFollowing(payload : {user_id: string}){
         try {
-            return this.connectionsService.getFollowingById(user_id)
+            return this.connectionsService.getFollowingById(payload.user_id)
 
         }catch (error) {
             if (error !instanceof HttpException) {
@@ -117,10 +117,10 @@ export class ConnectionsController {
         }
     }
 
-    @MessagePattern({cmd : "get_blocked"})
-    async getBlocked(user_id : string){
+    @MessagePattern("get_blocked")
+    async getBlocked(payload : {user_id: string}){
         try {
-            return this.connectionsService.getBlockedById(user_id)
+            return this.connectionsService.getBlockedById(payload.user_id)
 
         }catch (error) {
             if (error !instanceof HttpException) {
@@ -130,10 +130,10 @@ export class ConnectionsController {
         }
     }
 
-    @MessagePattern({cmd: "get_pending"})
-    async getPending(user_id : string){
+    @MessagePattern("get_pending")
+    async getPending(payload : {user_id: string}){
         try {
-            return this.connectionsService.getPendingById(user_id)
+            return this.connectionsService.getPendingById(payload.user_id)
         }catch (error) {
             if (error !instanceof HttpException) {
                 console.log(error)
@@ -142,7 +142,7 @@ export class ConnectionsController {
         }
     }
 
-    @MessagePattern({cmd : 'is_in_block'})
+    @MessagePattern('is_in_block')
     async isInBlock(data : IsInBlockReq){
         try {
             if(await this.connectionsService.isInBlock(data.user_id, data.to_id)){

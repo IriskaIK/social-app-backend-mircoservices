@@ -1,0 +1,181 @@
+asyncapi: 3.0.0
+info:
+  title: User Service Profile API
+  version: 1.0.0
+  description: >-
+    Api for user profile
+
+components:
+  schemas:
+    messages:
+      type: object
+      properties:
+        FindByIdPayload:
+          type: object
+          properties:
+            id:
+              type: string
+            excludeEmail:
+              type: boolean
+            excludeBirthDate:
+              type: boolean
+
+        FindByIdsPayload:
+          type: object
+          properties:
+            ids:
+              type: array
+              items:
+                type: string
+
+        UpdateImagePayload:
+          type: object
+          properties:
+            user_id:
+              type: string
+            image_id:
+              type: string
+
+        UpdateByIdPayload:
+          type: object
+          properties:
+            id:
+              type: string
+            userData:
+              type: object
+              first_name:
+                type: string
+              last_name:
+                type: string
+              email:
+                type: string
+              birthday:
+                type: string
+
+    reply:
+      type: object
+      properties:
+        FullProfileInfoResponse:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            id:
+              type: string
+            image_id:
+              type: string
+            createdAt:
+              type: string
+            email:
+              type: string
+            birthday:
+              type: string
+        ShortProfileInfoResponse:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            id:
+              type: string
+            image_id:
+              type: string
+            created_At:
+              type: string
+
+
+channels:
+  find_user_by_id:
+    address: register
+    messages:
+      subscribe.message:
+        name: Creates user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/FindByIdPayload'
+        summary: User created with given credentials.
+      reply.message:
+        name: Replying full profile info.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/FullProfileInfoResponse'
+        summary: Replying with full profile info.
+  find_users_by_ids:
+    address: login
+    messages:
+      subscribe.message:
+        name: Find user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/FindByIdsPayload'
+        summary: Finds user with given credentials.
+      reply.message:
+        name: Replying full profile info.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/FullProfileInfoResponse'
+        summary: Replying with full profile info.
+
+  update_user_by_id:
+    address: login
+    messages:
+      subscribe.message:
+        name: Find user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/UpdateByIdPayload'
+        summary: Finds user with given credentials.
+
+  update_image_id:
+    address: login
+    messages:
+      subscribe.message:
+        name: Find user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/UpdateImagePayload'
+        summary: Finds user with given credentials.
+
+
+operations:
+  find_user_by_id:
+    action: receive
+    channel:
+      $ref: "#/channels/find_user_by_id"
+    messages:
+      - $ref: '#/channels/find_user_by_id/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/find_user_by_id'
+      messages:
+        - $ref: '#/channels/find_user_by_id/messages/reply.message'
+
+  find_user_by_ids:
+    action: receive
+    channel:
+      $ref: "#/channels/find_users_by_ids"
+    messages:
+      - $ref: '#/channels/find_users_by_ids/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/find_users_by_ids'
+      messages:
+        - $ref: '#/channels/find_users_by_ids/messages/reply.message'
+
+  update_user_by_id:
+    action: receive
+    channel:
+      $ref: '#/channels/update_user_by_id'
+    messages:
+      - $ref: '#/channels/update_user_by_id/messages/subscribe.message'
+
+  update_image_id:
+    action: receive
+    channel:
+      $ref: '#/channels/update_image_id'
+    messages:
+      - $ref: '#/channels/update_image_id/messages/subscribe.message'
+

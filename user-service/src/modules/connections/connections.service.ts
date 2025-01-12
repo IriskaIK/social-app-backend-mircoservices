@@ -159,11 +159,12 @@ export class ConnectionsService {
                     last_name: true,
                     image_id: true
                 }
-            }
+            },
+
         })
     }
 
-    async getPendingById(ownerId: string) {
+    async getPendingById(ownerId: string): Promise<ConnectedListDto[]> {
         return await this.connectionRepository.find({
             where: {
                 following: {id: ownerId},
