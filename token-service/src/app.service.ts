@@ -102,7 +102,6 @@ export class AppService {
         const accessTokenPromise = this.jwtService.signAsync(
             {
                 id: user.id,
-                image_id : user.image_id,
                 tokenType: TokenType.ACCESS_TOKEN,
             },
             {
@@ -113,7 +112,6 @@ export class AppService {
         const refreshTokenPromise = this.jwtService.signAsync(
             {
                 id: user.id,
-                image_id : user.image_id,
                 tokenType: TokenType.REFRESH_TOKEN,
             },
             {
@@ -122,11 +120,11 @@ export class AppService {
             }
         )
 
-        const [accessToken, refreshToken] = await Promise.all([
+        const [access_token, refresh_token] = await Promise.all([
             accessTokenPromise, refreshTokenPromise
         ])
 
-        return {accessToken, refreshToken}
+        return {access_token, refresh_token}
     }
 
     async blackListTokens(accessToken: string, refreshToken: string): Promise<void> {

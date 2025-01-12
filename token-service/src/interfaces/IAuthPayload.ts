@@ -2,7 +2,6 @@
 
 export interface IAuthPayload {
     id : string;
-    image_id : string | null;
     tokenType : TokenType,
 }
 
