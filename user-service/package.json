@@ -18,7 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:run": "ts-node -r dotenv/config src/entities/seeding/seed.ts dotenv_config_path=./.env"
+    "seed:run": "ts-node -r dotenv/config src/entities/seeding/seed.ts dotenv_config_path=./.env",
+    "docs:auth" : "asyncapi start studio -f asyncapi.auth.yaml",
+    "docs:profile" : "asyncapi start studio -f asyncapi.profile.yaml",
+    "docs:connections" : "asyncapi start studio -f asyncapi.connections.yaml"
   },
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
@@ -37,6 +40,8 @@
     "typeorm-extension": "^3.6.3"
   },
   "devDependencies": {
+    "@asyncapi/cli": "^2.15.0",
+    "@asyncapi/generator": "^2.5.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

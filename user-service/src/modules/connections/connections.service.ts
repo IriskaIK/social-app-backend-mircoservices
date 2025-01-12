@@ -109,7 +109,7 @@ export class ConnectionsService {
 
     }
 
-    async getFollowersById(ownerId: string) {
+    async getFollowersById(ownerId: string) : Promise<ConnectedListDto[]> {
         return await this.connectionRepository.find({
             where: {
                 following: {id: ownerId},
@@ -121,13 +121,13 @@ export class ConnectionsService {
                     id: true,
                     first_name: true,
                     last_name: true,
-                    image_id: true
+                    image_id: true,
                 }
             }
         })
     }
 
-    async getFollowingById(ownerId: string) {
+    async getFollowingById(ownerId: string): Promise<ConnectionListDto[]> {
         return await this.connectionRepository.find({
             where: {
                 user: {id: ownerId},
@@ -145,7 +145,7 @@ export class ConnectionsService {
         })
     }
 
-    async getBlockedById(ownerId: string) {
+    async getBlockedById(ownerId: string): Promise<ConnectionListDto[]>{
         return await this.connectionRepository.find({
             where: {
                 user: {id: ownerId},
@@ -159,11 +159,12 @@ export class ConnectionsService {
                     last_name: true,
                     image_id: true
                 }
-            }
+            },
+
         })
     }
 
-    async getPendingById(ownerId: string) {
+    async getPendingById(ownerId: string): Promise<ConnectedListDto[]> {
         return await this.connectionRepository.find({
             where: {
                 following: {id: ownerId},
@@ -181,7 +182,7 @@ export class ConnectionsService {
         })
     }
 
-    async isInBlock(userId : string, toId : string) {
+    async isInBlock(userId : string, toId : string) : Promise<boolean> {
         const connection = await this.connectionRepository.findOne({
             where : {
                 following : {id : userId},

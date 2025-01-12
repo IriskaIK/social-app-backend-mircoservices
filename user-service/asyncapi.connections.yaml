@@ -1,0 +1,317 @@
+asyncapi: 3.0.0
+info:
+  title: User Service Connections API
+  version: 1.0.0
+  description: >-
+    Api for user connections.
+
+components:
+  schemas:
+    messages:
+      type: object
+      properties:
+        GetUserConnectionsPayload:
+          type: object
+          properties:
+            user_id:
+              type: string
+
+        IsInBlockPayload:
+          type: object
+          properties:
+            user_id:
+              type: string
+            to_id:
+              type: string
+
+        ModifyConnectionPayload:
+          type: object
+          properties:
+            user_to_connect_id:
+              type: string
+            user_owner_id:
+              type: string
+
+
+    reply:
+      type: object
+      properties:
+        IsInBlockResponse:
+          type: object
+          properties:
+            blocked:
+              type: boolean
+
+        ConnectedListResponse:
+          type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+            updatedAt:
+              type: string
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                image_id:
+                  type: string
+          
+
+        ConnectionListResponse:
+          type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+            updatedAt:
+              type: string
+            following:
+              type: object
+              properties:
+                id:
+                  type: string
+                first_name:
+                    type: string
+                last_name:
+                  type: string
+                image_id:
+                  type: string
+              
+
+channels:
+  create_connection:
+    address: create_connection
+    messages:
+      subscribe.message:
+        name: Create pending connection between users.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/ModifyConnectionPayload'
+        summary: Creates pending connection between users.
+
+  accept_connection:
+    address: accept_connection
+    messages:
+      subscribe.message:
+        name: Change pending to accepted connection between users.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/ModifyConnectionPayload'
+        summary: Changes pending to accepted connection between users.
+
+  reject_connection:
+    address: reject_connection
+    messages:
+      subscribe.message:
+        name: Change pending to rejected connection between users.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/ModifyConnectionPayload'
+        summary: Changes pending to rejected connection between users.
+
+  remove_connection:
+    address: remove_connection
+    messages:
+      subscribe.message:
+        name: Remove connection between users.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/ModifyConnectionPayload'
+        summary: Removes connection between users.
+
+  block_connection:
+    address: block_connection
+    messages:
+      subscribe.message:
+        name: Change connection status to blocked between users.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/ModifyConnectionPayload'
+        summary: Changes connection status to rejected between users.
+
+  get_followers:
+    address: get_followers
+    messages:
+      subscribe.message:
+        name: Get user followers by id.
+        contentType: application/json
+        summary: Get user followers by id..
+        payload:
+          $ref: '#/components/schemas/messages/properties/GetUserConnectionsPayload'
+      reply.message:
+        name: Reply with user followers.
+        contentType: application/json
+        summary: Reply with user followers.
+        payload:
+          $ref: '#/components/schemas/reply/properties/ConnectedListResponse'
+
+  get_following:
+    address: get_following
+    messages:
+      subscribe.message:
+        name: Get user following by id.
+        contentType: application/json
+        summary: Get user following by id.
+        payload:
+          $ref: '#/components/schemas/messages/properties/GetUserConnectionsPayload'
+      reply.message:
+        name: Reply with user following.
+        contentType: application/json
+        summary: Reply with user following.
+        payload:
+          $ref: '#/components/schemas/reply/properties/ConnectionListResponse'
+  get_blocked:
+    address: get_blocked
+    messages:
+      subscribe.message:
+        name: Get user blocked by id.
+        contentType: application/json
+        summary: Get user following by id
+        payload:
+          $ref: '#/components/schemas/messages/properties/GetUserConnectionsPayload'
+      reply.message:
+        name: Reply with blocked users.
+        contentType: application/json
+        summary: Reply with blocked users.
+        payload:
+          $ref: '#/components/schemas/reply/properties/ConnectionListResponse'
+
+  get_pending:
+    address: get_pending
+    messages:
+      subscribe.message:
+        name: Get pending users by id.
+        contentType: application/json
+        summary: Get pending users by id.
+        payload:
+          $ref: '#/components/schemas/messages/properties/GetUserConnectionsPayload'
+      reply.message:
+        name: Reply with pending users.
+        contentType: application/json
+        summary: Reply with pending users.
+        payload:
+          $ref: '#/components/schemas/reply/properties/ConnectedListResponse'
+
+  is_in_block:
+    address: is_in_block
+    messages:
+      subscribe.message:
+        name: Check if user blocked by another user.
+        contentType: application/json
+        summary: Checks if user blocked by another user.
+        payload:
+          $ref: '#/components/schemas/messages/properties/IsInBlockPayload'
+      reply.message:
+        name: Reply with status of block between users.
+        contentType: application/json
+        summary: Reply with status of block between users.
+        payload:
+          $ref: '#/components/schemas/reply/properties/IsInBlockResponse'
+
+
+
+
+operations:
+  create_connection:
+    action: receive
+    channel:
+      $ref: "#/channels/create_connection"
+    messages:
+      - $ref: '#/channels/create_connection/messages/subscribe.message'
+
+  accept_connection:
+    action: receive
+    channel:
+      $ref: "#/channels/accept_connection"
+    messages:
+      - $ref: '#/channels/accept_connection/messages/subscribe.message'
+
+
+  reject_connection:
+    action: receive
+    channel:
+      $ref: '#/channels/reject_connection'
+    messages:
+      - $ref: '#/channels/reject_connection/messages/subscribe.message'
+
+  remove_connection:
+    action: receive
+    channel:
+      $ref: '#/channels/remove_connection'
+    messages:
+      - $ref: '#/channels/remove_connection/messages/subscribe.message'
+
+  block_connection:
+    action: receive
+    channel:
+      $ref: '#/channels/block_connection'
+    messages:
+      - $ref: '#/channels/block_connection/messages/subscribe.message'
+
+  get_followers:
+    action: receive
+    channel:
+      $ref: "#/channels/get_followers"
+    messages:
+      - $ref: '#/channels/get_followers/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/get_followers'
+      messages:
+        - $ref: '#/channels/get_followers/messages/reply.message'
+
+  get_following:
+    action: receive
+    channel:
+      $ref: "#/channels/get_following"
+    messages:
+      - $ref: '#/channels/get_following/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/get_following'
+      messages:
+        - $ref: '#/channels/get_following/messages/reply.message'
+
+  get_blocked:
+    action: receive
+    channel:
+      $ref: "#/channels/get_blocked"
+    messages:
+      - $ref: '#/channels/get_blocked/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/get_blocked'
+      messages:
+        - $ref: '#/channels/get_blocked/messages/reply.message'
+
+  get_pending:
+    action: receive
+    channel:
+      $ref: "#/channels/get_pending"
+    messages:
+      - $ref: '#/channels/get_pending/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/get_pending'
+      messages:
+        - $ref: '#/channels/get_pending/messages/reply.message'
+
+  is_in_block:
+    action: receive
+    channel:
+      $ref: "#/channels/is_in_block"
+    messages:
+      - $ref: '#/channels/is_in_block/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/is_in_block'
+      messages:
+        - $ref: '#/channels/is_in_block/messages/reply.message'

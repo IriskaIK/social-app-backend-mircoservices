@@ -1,0 +1,113 @@
+asyncapi: 3.0.0
+info:
+  title: User Service Auth API
+  version: 1.0.0
+  description: >-
+    Api for user authentication
+
+components:
+  schemas:
+    messages:
+      type: object
+      properties:
+        LoginMessagePayload:
+          type: object
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+
+        RegisterMessagePayload:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+
+
+
+    reply:
+      type: object
+      properties:
+        FullProfileInfoResponse:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            id:
+              type: string
+            image_id:
+              type: string
+            createdAt:
+              type: string
+            email:
+              type: string
+            birthday:
+              type: string
+
+
+channels:
+  register:
+    address: register
+    messages:
+      subscribe.message:
+        name: Creates user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/RegisterMessagePayload'
+        summary: User created with given credentials.
+      reply.message:
+        name: Replying full profile info.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/FullProfileInfoResponse'
+        summary: Replying with full profile info.
+  login:
+    address: login
+    messages:
+      subscribe.message:
+        name: Find user with given credentials.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/messages/properties/LoginMessagePayload'
+        summary: Finds user with given credentials.
+      reply.message:
+        name: Replying full profile info.
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/reply/properties/FullProfileInfoResponse'
+        summary: Replying with full profile info.
+
+
+operations:
+  login:
+    action: receive
+    channel:
+      $ref: "#/channels/login"
+    messages:
+      - $ref: '#/channels/login/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/login'
+      messages:
+        - $ref: '#/channels/login/messages/reply.message'
+
+  register:
+    action: receive
+    channel:
+      $ref: "#/channels/register"
+    messages:
+      - $ref: '#/channels/register/messages/subscribe.message'
+    reply:
+      channel:
+        $ref: '#/channels/register'
+      messages:
+        - $ref: '#/channels/register/messages/reply.message'

@@ -8,9 +8,11 @@ import {
 import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
 import {User} from 'src/entities/user.entity';
-import {UserDTO} from "src/modules/user/interfaces/UserDTO";
 import {SuccessfullResponse} from "src/modules/user/interfaces/SuccessfullResponse";
 import {RpcException} from "@nestjs/microservices";
+import {UserUpdateProfileDto} from "src/dto/user-update-profile.dto";
+import {UserFullProfileInfoDto} from "src/dto/user-full-profile-info.dto";
+import {UserShortProfileInfoDto} from "src/dto/user-short-profile-info.dto";
 
 
 
@@ -23,7 +25,7 @@ export class UserService {
     }
 
 
-    async findById(userId: string, excludeEmail : boolean = true, excludeBirthDate : boolean = true): Promise<User> {
+    async findById(userId: string, excludeEmail : boolean = true, excludeBirthDate : boolean = true): Promise<UserFullProfileInfoDto|UserShortProfileInfoDto> {
         let user: User
 
         if(isNaN(+userId)){
@@ -38,7 +40,6 @@ export class UserService {
         }
         if (!user) throw new RpcException(new NotFoundException('User not found'));
         delete user.password
-        delete user.createdAt
         delete user.updatedAt
 
         if(excludeEmail){
@@ -50,12 +51,14 @@ export class UserService {
         return user;
     }
 
-    async findByIds(ids: string[]): Promise<User[]> {
+    async findByIds(ids: string[]):Promise<UserShortProfileInfoDto[]>{
         try {
             const users = await this.userRepository.find({where: {id: In(ids)}});
             users.forEach(user => {
                 delete user.password;
                 delete user.email
+                delete user.birthday
+                delete user.updatedAt
             });
             return users;
         } catch (e) {
@@ -64,7 +67,7 @@ export class UserService {
         }
     }
 
-    async updateById(data : {id: string, userData: UserDTO}): Promise<SuccessfullResponse> {
+    async updateById(data : UserUpdateProfileDto): Promise<SuccessfullResponse> {
 
         try {
 
