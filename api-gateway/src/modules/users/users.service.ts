@@ -9,7 +9,6 @@ import {
 import {ClientProxy, RpcException} from "@nestjs/microservices";
 import {UserDTO} from "src/interfaces/UserDTO";
 import {catchError, firstValueFrom, throwError} from "rxjs";
-import {SuccessfullResponse} from "src/interfaces/SuccessfullResponse";
 import {Request} from 'express';
 import {UpdateUserDto} from "src/modules/users/dto/update-user.dto";
 import {UserShortProfileInfoDto} from "src/modules/users/dto/user-short-profile-info.dto";
@@ -46,7 +45,7 @@ export class UsersService {
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
     }
 
-    async updateUserById(data: UpdateUserDto, req: Request): Promise<SuccessfullResponse> {
+    async updateUserById(data: UpdateUserDto, req: Request) {
         const pattern = {cmd: 'update_user_by_id'}
 
         if (!req.user.id) {

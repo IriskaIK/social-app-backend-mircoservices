@@ -1,9 +1,12 @@
 import {BadRequestException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import {ClientProxy, RpcException} from "@nestjs/microservices";
-import {UserCredentials} from "src/interfaces/UserCredentials";
-import {UserDTO} from "src/interfaces/UserDTO";
 import {catchError, firstValueFrom, throwError} from "rxjs";
 import {Request, Response} from "express";
+import {AuthTokensDto} from "src/modules/auth/dto/auth-tokens.dto";
+import {UserDetailsDto} from "src/modules/auth/dto/user-details.dto";
+import {AuthResponseCredentialsDto} from "src/modules/auth/dto/auth-response-credentials.dto";
+import {LoginCredentialsDto} from "src/modules/auth/dto/login-credentials.dto";
+import {RegisterCredentialsDto} from "src/modules/auth/dto/register-credentials.dto";
 
 export interface ITokensResponse {
     accessToken: string
@@ -27,50 +30,49 @@ export class AuthService {
     }
 
 
-    async registerUser(data: UserCredentials, response: Response) {
+    async registerUser(data: RegisterCredentialsDto, response: Response): Promise<AuthResponseCredentialsDto> {
         const pattern = {cmd: "register"};
 
-        const user: UserDTO = await firstValueFrom(this.userService.send(pattern, data)
+        // TODO: handle error from service here, return appropriate response
+        const user: UserDetailsDto = await firstValueFrom(this.userService.send(pattern, data)
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
 
 
-        delete user.password
         const tokens: {
-            tokens: ITokensResponse
+            tokens: AuthTokensDto
         } = await firstValueFrom(this.authService.send({cmd: 'generate_token'}, user));
 
         console.log(tokens)
-        response.cookie('refresh_token', tokens.tokens.refreshToken)
-        return {...tokens, user}
+        response.cookie('refresh_token', tokens.tokens.refresh_token)
+        response.status(201)
+        return {...tokens.tokens, user}
 
     }
 
-    async loginUser(data: { email: string; password: string }, response: Response) {
+    async loginUser(data: LoginCredentialsDto, response: Response): Promise<AuthResponseCredentialsDto> {
         const pattern = {cmd: "login"};
-
-        const user: UserDTO = await firstValueFrom(this.userService.send(pattern, data)
+        // TODO: handle error from service here, return appropriate response
+        const user: UserDetailsDto = await firstValueFrom(this.userService.send(pattern, data)
             .pipe(catchError(error => throwError(() => new RpcException(error.response)))))
 
-        delete user.password;
-
         const tokens: {
-            tokens: ITokensResponse
+            tokens: AuthTokensDto
         } = await firstValueFrom(this.authService.send({cmd: 'generate_token'}, user));
 
         console.log(tokens)
-        response.cookie('refresh_token', tokens.tokens.refreshToken)
-        return {...tokens, user}
+        response.cookie('refresh_token', tokens.tokens.refresh_token)
+        return {...tokens.tokens, user}
     }
 
     logoutUser(request: Request, response: Response) {
         console.log('in logout service');
         const pattern = {cmd: 'blacklist_token'};
 
-        const authHeader = request.headers['authorization'];
+        const authHeader: string = request.headers['authorization'];
 
 
-        const accessToken = authHeader.split(' ')[1];
-        const refreshToken = request.cookies['refresh_token']
+        const accessToken: string = authHeader.split(' ')[1];
+        const refreshToken: string = request.cookies['refresh_token']
 
         if (accessToken && refreshToken) {
             response.clearCookie('refresh_token')
@@ -79,24 +81,23 @@ export class AuthService {
                 refreshToken
             }).subscribe()
             return {
-                message: "User log outed",
-                status: HttpStatus.OK
+                message: 'User logged out',
             }
         }
     }
 
 
-    async refreshTokens(request: Request, response: Response) {
+    async refreshTokens(request: Request, response: Response): Promise<AuthTokensDto> {
         const pattern = {cmd: 'refresh_tokens'};
 
         const refreshToken = request.cookies['refresh_token']
-        if(refreshToken){
+        if (refreshToken) {
             const tokens: {
-                tokens: ITokensResponse
+                tokens: AuthTokensDto
             } = await firstValueFrom(this.authService.send(pattern, refreshToken))
-            response.cookie('refresh_token', tokens.tokens.refreshToken)
-            return {...tokens}
-        }else {
+            response.cookie('refresh_token', tokens.tokens.refresh_token)
+            return {...tokens.tokens}
+        } else {
             throw new BadRequestException('Missing refresh token');
         }
     }
